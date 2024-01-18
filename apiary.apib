@@ -1,80 +1,398 @@
 FORMAT: 1A
 HOST: https://polls.apiblueprint.org/
 
-# AngelaTest
+# XCNB3 Bank
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+台企銀全球金融網行員端API說明。
 
-## Questions Collection [/questions]
+# Group 維護管理
 
-### List All Questions [GET]
+## 訊息代碼 [/maintenanceManagement/messageCodeManagement]
 
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
-
+### 查詢 [POST /maintenanceManagement/messageCodeManagement{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
 + Request (application/json)
+    + Attributes (object)
+        + msgType: 0001 (string, required) - 代碼別
+            最多4個字元, 內容儲存 : 0001/0002/0003, 0001為訊息代碼, 0002為企業端系統訊息代碼, 0003為銀行端系統訊息代碼
+        + msgCode: 0000 (string, optional) - 訊息代碼
+            最多20個字元
+        + msgDesc: 處理成功! (string, optional) - 訊息內容
+            最多512個字元
+    + Body
+    
+            {
+                "msgType": "0001",
+                "msgCode": "0000",
+                "msgDesc": "處理成功!"
+            }
++ Response 200 (application/json)
+    `資料排序` - 依照代碼別msgType由小到大, 接著訊息代碼msgCode由小到大, 最後訊息內容msgDesc由小到大
+    + Body
+    
+            {
+                "code": 0,
+                "data": [
+                    {
+                      "id": 653,
+                      "msgType": "0001",
+                      "msgTypeName": "電文訊息代碼",
+                      "msgCode": "0000",
+                      "msgDesc": "處理成功!",
+                      "sorc": "S",
+                      "sorcName": "前置系統",
+                      "detlDesc": "處理成功!"
+                    }
+                ],
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
+### 修改 [POST /maintenanceManagement/messageCodeManagementModify{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
+    + Attributes (object)
+        + id: 653 (number, required) - 編號
+        + msgDesc: 處理成功! (string, optional) - 訊息內容
+            最多512個字元
+        + detlDesc: 處理成功! (string, optional) - 訊息說明
+            最多512個字元
+        + sorc: S (string, required) - 來源
+            最多1個字元, 內容儲存 : H/S, H為香港中心, S為前置系統
+    + Body
+    
+            {
+                "id": 653,
+                "msgDesc": "處理成功!",
+                "detlDesc": "處理成功!",
+                "sorc": "S"
+            }
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "code": 0,
+                "data": null,
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
 
-+ Response 201 (application/json)
+### 新增 [POST /maintenanceManagement/messageCodeManagementAdd{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
+    + Attributes (object)
+        + msgType: 0001 (string, required) - 代碼別
+            最多4個字元, 內容儲存 : 0001/0002/0003, 0001為訊息代碼, 0002為企業端系統訊息代碼, 0003為銀行端系統訊息代碼
+        + msgCode: 0000 (string, optional) - 訊息代碼
+            最多20個字元, 代碼別+訊息代碼不可重複, 若不同代碼別但訊息代碼重複就可以
+        + msgDesc: 處理成功! (string, optional) - 訊息內容
+            最多512個字元
+        + detlDesc: 處理成功! (string, optional) - 訊息說明
+            最多512個字元
+        + sorc: S (string, required) - 來源
+            最多1個字元, 內容儲存 : H/S, H為香港中心, S為前置系統
+    + Body
+    
+            {
+                "msgType": "0001",
+                "msgCode": "0000",
+                "msgDesc": "處理成功!",
+                "detlDesc": "處理成功!",
+                "sorc": "S"
+            }
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "code": 0,
+                "data": null,
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
 
-    + Headers
-
-            Location: /questions/2
-
+### 刪除 [POST /maintenanceManagement/messageCodeManagementDelete{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
+    + Attributes (object)
+        + ids: 0 (number, required) - 編號
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
+                "ids": [
+                0
                 ]
+            }
+
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "code": 0,
+                "data": null,
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
+            
+    
+## 幣別設定 [/maintenanceManagement/currencySetting]
+
+### 查詢 [POST /maintenanceManagement/messageCodeManagement{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
++ Response 200 (application/json)
+    `資料排序` - 依照代碼別currencyCode由小到大
+    + Body
+
+            {
+                "code": 0,
+                "data": [
+                {
+                  "id": 2,
+                  "currencyCode": "AUD",
+                  "currencyName": "澳幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 3,
+                  "currencyCode": "CAD",
+                  "currencyName": "加幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 6,
+                  "currencyCode": "CHF",
+                  "currencyName": "瑞士法郎",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 15,
+                  "currencyCode": "CNY",
+                  "currencyName": "人民幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 11,
+                  "currencyCode": "EUR",
+                  "currencyName": "歐元",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 7,
+                  "currencyCode": "GBP",
+                  "currencyName": "英鎊",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 14,
+                  "currencyCode": "HKD",
+                  "currencyName": "港幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 9,
+                  "currencyCode": "JPY",
+                  "currencyName": "日圓",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 12,
+                  "currencyCode": "NZD",
+                  "currencyName": "紐幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 13,
+                  "currencyCode": "SEK",
+                  "currencyName": "瑞典幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 4,
+                  "currencyCode": "SGD",
+                  "currencyName": "新加坡幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 8,
+                  "currencyCode": "THB",
+                  "currencyName": "泰幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 10,
+                  "currencyCode": "TWD",
+                  "currencyName": "新台幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 1,
+                  "currencyCode": "USD",
+                  "currencyName": "美金",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                },
+                {
+                  "id": 5,
+                  "currencyCode": "ZAR",
+                  "currencyName": "南非幣",
+                  "remittanceDisplay": "1",
+                  "exchangeRateDisplay": "1"
+                }
+                ],
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
+
+### 修改 [POST /maintenanceManagement/currencySettingModify{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
+    + Attributes (object)
+        + id: 1 (number, required) - 編號
+        + currencyCode: AUD (string, required) - 幣別代碼
+            最多3個字元, 需輸入3碼英文字, 格式限制 : 僅能英文字, 不可儲存資料庫已有的幣別代碼
+        + currencyName: 澳幣 (string, required) - 幣別名稱
+            最多40個字元
+        + remittanceDisplay: 1 (number, required) - 匯款顯示
+            最多1個字元, 內容儲存 : 1/0, 1為是, 0為否
+        + exchangeRateDisplay: 1 (number, required) - 牌告顯示
+            最多1個字元, 內容儲存 : 1/0, 1為是, 0為否
+    + Body
+    
+            {
+                "id": 1,
+                "currencyCode": "AUD",
+                "currencyName": "澳幣",
+                "remittanceDisplay": "1",
+                "exchangeRateDisplay": "1"
+            }
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "code": 0,
+                "data": null,
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
+
+### 新增 [POST /maintenanceManagement/currencySettingAdd{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
+    + Attributes (object)
+        + currencyCode: AUD (string, required) - 幣別代碼
+            最多3個字元, 需輸入3碼英文字, 格式限制 : 僅能英文字, 不可儲存資料庫已有的幣別代碼
+        + currencyName: 澳幣 (string, required) - 幣別名稱
+            最多40個字元
+        + remittanceDisplay: 1 (number, required) - 匯款顯示
+            最多1個字元, 內容儲存 : 1/0, 1為是, 0為否
+        + exchangeRateDisplay: 1 (number, required) - 牌告顯示
+            最多1個字元, 內容儲存 : 1/0, 1為是, 0為否
+    + Body
+    
+            {
+                "currencyCode": "AUD",
+                "currencyName": "澳幣",
+                "remittanceDisplay": "1",
+                "exchangeRateDisplay": "1"
+            }
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "code": 0,
+                "data": null,
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
+            }
+
+### 刪除 [POST /maintenanceManagement/currencySettingDelete{?traceid,Authorization}]
++ Parameters
+    + traceid: 3901571d738d43a8a2fe92345ae8661a (string, required) - Trace Id
+    + Authorization:  Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1bml0Ijp7ImlkIjowLCJjb2RlIjoiREMiLCJuYW1lIjoi566h5Yi256eRIn0sInVzZXIiOnsiaWQiOjIsInRyYWNlSWQiOiIzOTAxNTcxZDczOGQ0M2E4YTJmZTkyMzQ1YWU4NjYxYSIsImxvZ2luSWQiOiJ1c2VyMDAxIiwibmFtZSI6IuadjuWwj-WQjSIsInR5cGUiOjJ9LCJleHAiOjE2OTQ2MDc1Nzl9.tyFkTheTlCWcB0e3aKbycY5lZUpcagVY05ZWGZ8fwUHAkmF5u1unJ7JweUnRF7xheYDZ7DlegMAHH4elPRS9fQ (string, required) - 認證 Token
++ Request (application/json)
+    + Attributes (object)
+        + ids: 0 (number, required) - 編號
+    + Body
+
+            {
+                "ids": [
+                0
+                ]
+            }
+
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "code": 0,
+                "data": null,
+                "msg": ""
+            }
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "error": "error.unauthorized"
             }
